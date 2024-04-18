@@ -44,7 +44,7 @@ SpecAndDocAboutPage = SpecAndDoc about page
 #
 # Sample page
 #
-SpecAndDocArea = Documentation et spécification des modules ATM avec la page %s
+SpecAndDocArea = Intéractions des modules ATM avec la page %s
 MyPageName = My page name
 
 #

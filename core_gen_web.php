@@ -70,21 +70,8 @@ $now = dol_now();
 
 $docSpecGenerator  = new DocSpecObjectManager($db);
 
-$langContext = $docSpecGenerator->setCurrentContext($context)
-                                ->getLangsContext();
-
-var_dump($langContext);
-
-
-
-
-
-/*
- * Actions
- */
-
-// None
-
+$langContext = $docSpecGenerator->setCurrentContext($context)->getLangsTransContext();
+$docSpecGenerator->init();
 
 /*
  * View
@@ -99,46 +86,25 @@ $conf->dol_hide_leftmenu = 1;
 
 llxHeader("", $langs->trans("SpecAndDocArea") , $originHelpPage, '', 0, 0, '', '', '', 'mod-specanddoc page-index');
 
-print load_fiche_titre($langs->trans("SpecAndDocArea"  ), '', 'specanddoc.png@specanddoc');
-print load_fiche_titre($langContext, '', 'specanddoc.png@specanddoc');
+print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'specanddoc.png@specanddoc');
+
 ?>
 <div class="fichecenter"><div class="fichethirdleft">
     <?php
     
-        echo 'table des matières';
+   
+     //@todo deplacer dans la classe DocSpecObjectGenerator   
+    foreach ($docSpecGenerator->TConfig as $key => $object) {
+        print load_fiche_titre($langs->trans('Module') .' '.  '<strong>' . $object[0] .  '</strong>','','switch_on');
+
+        // liste exaustives  des exigence affectées à ce context
+    }
+
     ?>
     </div>
 
     <div class="fichetwothirdright">
-        <?php
-            var_dump($context);
-            // on passe en revue tous les dossier dans custom.
-
-            $directory = '..'; // Replace with the actual directory path
-            // Extracts files and directories that match a pattern
-            $items = glob($directory . '/*');
-            foreach ($items as $item) {
-                if (is_file($item)) {
-                   // echo "File: {$item}\n";
-                }
-                if (is_dir($item)) {
-                    //$itemsClass = glob($item . '/class/');    
-                    //var_dump('test : ' . $item);
-                    //var_dump('test : ' . $item);
-                   print '<pre>' . var_export($item . '/class/',true) . '</pre>' ;
-                   $rep = $item . '/class/';
-                  
-                     if ($docSpecGenerator->fichierExisteAvecSuffixe($rep, $suffixe )){
-                           echo 'oui dans : ' .  $item . '/class/';
-                     }else{
-                        echo 'non dans : ' .  $item . '/class/';
-                     }       
-                    //echo "Directory1: {$item}\n";
-                }
-            }
-           
-           
-        ?>
+        
     </div>
 </div>
 

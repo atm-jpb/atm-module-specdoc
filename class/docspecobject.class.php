@@ -9,6 +9,15 @@ abstract class DocSpecObject {
 
    const RESOURCE_TYPE_SPECS='specs.md';
    const RESOURCE_TYPE_DOCS='docs.md';
+
+   /** regex patterns definition  */
+   // Element begin with [context-  et finissant par  ]
+   const PATTERN_CONTEXT = "/\[context-(.*?)\]/";
+   // Element begin with [need-  et finissant par  ]
+   const PATTERN_NEED = "\[need-(.*?)\]";
+
+   const PATTERN_CONTEXT_NEED = "/\[context-(.*?)\]\[need-(.*?)\]/";
+
    public $nameModule;
 
     //@abstract 
@@ -29,10 +38,11 @@ abstract class DocSpecObject {
     }  
 
     /**
-     * 
+     * Récuperation en fonction du context courant  pour le fichier de ressource traité
      */
-    public function loadResources($typeMarkdowFile){
-
+    public function loadResourcesFile($typeMarkdowFile, $currentContext){
+        $TContextLine = [];
+        $TTempContext = [];    
        // Récuperation du chemin de la classe enfant (héritage)
         $urlToFile = dirname(dirname((new ReflectionClass($this))->getFileName())) . '/'.$typeMarkdowFile;
 
@@ -50,15 +60,43 @@ abstract class DocSpecObject {
             $count = 0;
             foreach (get_all_lines($file_handle) as $line) {
                 $count += 1;
-                echo $count.". ".$line  .'<br>';
+               // echo $count.". ".$line  .'<br>';
                 /** @todo parsing de la ligne pour récupération des clés [context] et [need] */
-                $patternContext = "/\[context-(.*?)\]/";
-                $patternNeed = "\[need-(.*?)\]";
+                
                 if (!empty($line)){
-                    if (preg_match($patternContext, $line, $matches)) {
-                       echo '<pre>' .  var_export($matches,true) . '</pre>';
-                        echo  $matches[1];
+                    if (preg_match($this::PATTERN_CONTEXT, $line, $matches)) {
+
+                      // echo '<pre>' .  var_export($matches,true) . '</pre>';
+                      // echo  $matches[1];
+
+                        if ($currentContext == $matches[1]){
+                            // empty temp array contact
+                             $TTempContext = [];  
+                             /** @todo remplir tmpcontext avec [context][date][exigangeNum] 
+                              *  
+                             */
+                             if (preg_match_all($this::PATTERN_CONTEXT_NEED, $line, $matches)) { 
+                                // echo '<pre>match_all -- ' .  var_export($matches,true) . '</pre>';
+                              
+                                // recupération de la description sans les tags context et need
+                                $mDesc =  preg_split($this::PATTERN_CONTEXT_NEED, $line) ; 
+                               // var_dump($mDesc);
+                                $desc = array_key_exists(1, $mDesc) ? str_replace( "\\" , " ", $mDesc[1] )   :  "" ;
+                                echo $desc.'<br>';
+                                // echo '<pre>split -- ' .  var_export(preg_split($this::PATTERN_CONTEXT_NEED, $line),true) . '</pre>';
+                             }else{
+                                // pas d'entete , on stock la ligne complète
+                                $desc = $line;
+                             }
+
+                        }else{
+                          // pas le context courant ou description            
+
+                        }
                         //$this->fetchLine($line);
+                    }else{
+                        // nous sommes dans le cas d'un multi lignes
+                        // nous stockons temporairement ces lignes 
                     }
                 }
                 

@@ -193,8 +193,8 @@ class DocSpecObjectManager extends CommonObject
 		if (is_array($this->TConfig)){
 			
 			foreach ($this->TConfig as $key => $wrapper) {	
-				$TConfig[$key]['specs'] = $wrapper[$this::CLASS_OBJECT_INDEX]->loadResources($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_SPECS);
-				$TConfig[$key]['docs'] =  $wrapper[$this::CLASS_OBJECT_INDEX]->loadResources($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_DOCS);
+				$TConfig[$key]['specs'] = $wrapper[$this::CLASS_OBJECT_INDEX]->loadResourcesFile($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_SPECS, $this->currentContext);
+				$TConfig[$key]['docs'] =  $wrapper[$this::CLASS_OBJECT_INDEX]->loadResourcesFile($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_DOCS, $this->currentContext);
 			}
 		}
 

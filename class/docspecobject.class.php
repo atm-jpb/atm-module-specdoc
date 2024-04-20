@@ -5,7 +5,7 @@
  * De les parser et de les injecter dans à la demande  au frontal 
  * 
  */
-abstract class DocSpecObject {
+class DocSpecObject {
 
    const RESOURCE_TYPE_SPECS='specs.md';
    const RESOURCE_TYPE_DOCS='docs.md';
@@ -20,23 +20,11 @@ abstract class DocSpecObject {
 
    public $nameModule;
 
-    //@abstract 
-    // qui nous permet de renseigner les valeurs en tant que dev de la classe au moment de l'implementation
-    abstract protected function setArrayContext(); 
-
-    public function __construct(){
-        $this->nameModule = ucfirst( basename(dirname(dirname((new ReflectionClass($this))->getFileName()))) );
+    
+   public function __construct(){
+       $this->nameModule = ucfirst( basename(dirname(dirname((new ReflectionClass($this))->getFileName()))) );
     }
-    /**
-     * Magic method call from child
-     */
-    public function __toString()
-    { 
-        // Obtient le dossier parent du dossier contenant le fichier de la classe appelante
-        
-        return ucfirst( basename(dirname(dirname((new ReflectionClass($this))->getFileName()))) );
-    }  
-
+    
     /**
      * Récuperation en fonction du context courant  pour le fichier de ressource traité
      */
@@ -110,5 +98,24 @@ abstract class DocSpecObject {
         
     }
 
+    /**
+     * Magic method call from child
+     */
+    public function __toString()
+    { 
+        // Obtient le dossier parent du dossier contenant le fichier de la classe appelante
+        
+        return ucfirst( basename(dirname(dirname((new ReflectionClass($this))->getFileName()))) );
+    } 
+    
+    public function __get($prop){
+        echo 'Propriété ' .$prop. ' inaccessible.<br>';
+    }
+   
+   
+    public function __set($prop, $valeur){
+        echo 'Impossible de mettre à jour la valeur de ' .$prop. ' avec "'
+        .$valeur. '" (propriété inaccessible)';
+    }
 
 }

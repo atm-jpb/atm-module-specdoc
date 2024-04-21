@@ -26,6 +26,7 @@
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
+require_once (__DIR__ . '/docspecobject.class.php');
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
@@ -73,8 +74,11 @@ class DocSpecObjectManager extends CommonObject
 
 	const CLASS_PATH_FOLDER = '/class/';
 	const ALL_ELEMENTS = '/*';
-	const HELPER_CLASS_FILE_NAME ='helper.class.php' ;
-	const SUFFIXE = '_helper';
+	const HELPER_SPECS_FILE_NAME ='specs.md' ;
+	const HELPER_DOCS_FILE_NAME ='docs.md' ;
+	const UP_ONE_DIRECTORY ='..';
+
+	//const SUFFIXE = '_helper';
 	const CLASS_OBJECT_INDEX = 0;
 	/**
 	 * Constructor
@@ -87,42 +91,23 @@ class DocSpecObjectManager extends CommonObject
 
 		$this->db = $db;
 		$this->urlToGeneratorPage = DOL_MAIN_URL_ROOT . $conf->file->dol_url_root['alt0']  . "/" . "specanddoc" . '/core_gen_web.php';
-
-		if (!getDolGlobalInt('MAIN_SHOW_TECHNICAL_ID') && isset($this->fields['rowid']) && !empty($this->fields['ref'])) {
-			$this->fields['rowid']['visible'] = 0;
-		}
-		if (!isModEnabled('multicompany') && isset($this->fields['entity'])) {
-			$this->fields['entity']['enabled'] = 0;
-		}
-
-		// Example to show how to set values of fields definition dynamically
-		/*if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'read')) {
-			$this->fields['myfield']['visible'] = 1;
-			$this->fields['myfield']['noteditable'] = 0;
-		}*/
-
-		// Unset fields that are disabled
-		foreach ($this->fields as $key => $val) {
-			if (isset($val['enabled']) && empty($val['enabled'])) {
-				unset($this->fields[$key]);
-			}
-		}
-
-		// Translate some data of arrayofkeyval
-		if (is_object($langs)) {
-			foreach ($this->fields as $key => $val) {
-				if (!empty($val['arrayofkeyval']) && is_array($val['arrayofkeyval'])) {
-					foreach ($val['arrayofkeyval'] as $key2 => $val2) {
-						$this->fields[$key]['arrayofkeyval'][$key2] = $langs->trans($val2);
-					}
-				}
-			}
-		}
-
-
 		$this->setGlobalContext();
 
 
+	}
+
+	/**
+	 * @todo implementer la liste exaustive des contexts
+	 * Utilisé dans le fichier d'action 
+	 */
+	private function setGlobalContext(){
+		global $conf, $hookmanager;
+		// PROJET
+		$this->TGlobalContextManaged["projectsindex"] = "projectsindex";
+		$this->TGlobalContextManaged["projectlist"] = "projectlist";
+		// PROPAL
+		$this->TGlobalContextManaged["propalcard"] = "propalcard";
+		
 	}
 
 	/**
@@ -154,69 +139,56 @@ class DocSpecObjectManager extends CommonObject
 		$this->loadResourcesFromClass();
 	}
 	/**
-	 * charge en memoire TConfig les classes helper depuis les modules actifs dans custom qui ont la class enfant déclaréé dans le dossier class
+	 * charge en memoire TConfig les .md depuis les modules actifs dans custom.  et crée les classes docspecobject
 	 */
 	private function  loadClassFromActiveCustomModule(){
 
-		global $conf;
-		
-		$directory = '..'; // Replace with the actual directory path
 		// Extracts files and directories that match a pattern
-		$items = glob($directory . $this::ALL_ELEMENTS);
+		$items = glob( $this::UP_ONE_DIRECTORY . $this::ALL_ELEMENTS);
 		foreach ($items as $item) {	
-			if (is_dir($item)) {
-			   $rep = $item . $this::CLASS_PATH_FOLDER;
-				 if ($this->FileExistsWithSuffix($rep, $this::HELPER_CLASS_FILE_NAME )){
-					   if ( !empty($conf->{basename($item)}->enabled)){
-						$this->TConfig[basename($item)] = $this::HELPER_CLASS_FILE_NAME;
-					   }   
-				 }    	
+			if (is_dir($item) && $this->candidateToproceed($item) ) {
+				$this->TConfig[basename($item)] = array();
+				$this->TConfig[basename($item)]['object'] = new DocSpecObject( basename($item));
+
+				if ($this->FileExistsWithSuffix($item, $this::HELPER_SPECS_FILE_NAME )){
+					$this->TConfig[basename($item)]['specsFile']  =  $this::HELPER_SPECS_FILE_NAME;
+
+				}   
+				if ($this->FileExistsWithSuffix($item, $this::HELPER_DOCS_FILE_NAME )){
+					$this->TConfig[basename($item)]['docsFile'] =  $this::HELPER_DOCS_FILE_NAME;
+				}	
 			}
 		}
-		// affectation des classes candidates dans l'array de config de l'objet courant
-		foreach ($this->TConfig as $key => $value) {
-			dol_include_once('/'.$key. $this::CLASS_PATH_FOLDER . $this::HELPER_CLASS_FILE_NAME);
-			$className = $key . $this::SUFFIXE;
-
-			/**  @todo on doit check si le context courant est déclaré dans l'enfant  pour loader la class */
-			$this->TConfig[$key] = array();
-			$this->TConfig[$key][] = new  $className($this->db);
-			$this->TConfig[$key][] = 'test';
-		}		
 	}
 
+
+	/**
+	 * 
+	 */
+	private function candidateToproceed($item){
+		global $conf;
+
+		return !empty($conf->{basename($item)}->enabled) && ($this->FileExistsWithSuffix($item, $this::HELPER_SPECS_FILE_NAME ) || $this->FileExistsWithSuffix($item, $this::HELPER_DOCS_FILE_NAME)) ;
+	}
 	/**
 	 * Charge les fichiers .md  pour chaque object enfant dans Tconfig si ils existent
 	 */
 	private function loadResourcesFromClass(){
-
 		if (is_array($this->TConfig)){
-			
-			foreach ($this->TConfig as $key => $wrapper) {	
-				$TConfig[$key]['specs'] = $wrapper[$this::CLASS_OBJECT_INDEX]
-												->loadResourcesFile($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_SPECS, $this->currentContext);
-				$TConfig[$key]['docs'] =  $wrapper[$this::CLASS_OBJECT_INDEX]
-												->loadResourcesFile($wrapper[$this::CLASS_OBJECT_INDEX]::RESOURCE_TYPE_DOCS, $this->currentContext);
-
+			foreach ($this->TConfig as $key => $wrappers) {		
+				foreach($wrappers as $keywrapper => $wrapper){
+					/** @todo voir pour ne pas avoir à mettre $object */
+					if ($keywrapper == 'object'){
+						$this->TConfig[$key]['specs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_SPECS, $this->currentContext);	
+						/** @todo  on peut faire la même avec une doc */
+						//$this->TConfig[$key]['docs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_DOCS, $this->currentContext);	
+					}		
+				}
 			}
-			echo '<pre> Tconfig -:- ' .  var_export($TConfig,true) . '</pre>';
-			
 		}
-
 		return $this;
 	}
-	/**
-	 * @todo la classe enfant doit implementer celle-ci
-	 */
-	private function setGlobalContext(){
-
-		$this->TGlobalContextManaged["projectsindex"] = "projectsindex";
-		$this->TGlobalContextManaged["projectlist"] = "projectlist";
-		// PROPAL
-		$this->TGlobalContextManaged["propalcard"] = "propalcard";
-		
-
-	}
+	
 	/**
 	 * getter
 	 */
@@ -251,12 +223,7 @@ class DocSpecObjectManager extends CommonObject
 				}
 			}
 		}
-		
-		
 		// Le fichier avec le suffixe n'existe pas
 		return false;
 	}
-
-
-	
 }

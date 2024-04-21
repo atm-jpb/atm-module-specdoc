@@ -103,7 +103,7 @@ class ActionsSpecAndDoc extends CommonHookActions
 		<script>
 			$( document ).ready(function() {
 				console.log( "document loaded" );
-				$(".helppresent").parent().parent().prop("title", "your new title");
+				$(".helppresent").parent().parent().prop("title", "Texte dynamique");
 			});
 		</script>
 		';

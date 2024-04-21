@@ -58,6 +58,7 @@ if (!$res) {
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once (__DIR__ . '/class/docspecobjectmanager.class.php');
+
 $hookmanager->initHooks('specdocgenerator');
 $langs->loadLangs(array("specanddoc@specanddoc"));
 
@@ -94,13 +95,29 @@ print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'sp
     
    
      //@todo deplacer dans la classe DocSpecObjectGenerator   
-    foreach ($docSpecGenerator->TConfig as $key => $object) {
-        print load_fiche_titre($langs->trans('Module') .' '.  '<strong>' . $object[0] .  '</strong>','','switch_on');
+    foreach ($docSpecGenerator->TConfig as $key => $configs) {
+        print load_fiche_titre($langs->trans('Module') .' '.  '<strong>' . $key .  '</strong>','','switch_on');
+        print '<hr>';
+        foreach ($configs['specs'] as $keyConf => $value) {  
+            ?>
+            <div class="info clearboth">
+           
+                <span class="fa fa-info-circle" title="Exigence"></span>
+                <span><h3 style="display:inline;">Exigence-<?=$value->getNeed()?></h3></span>
+           
+            <span style="float:right;"><?=$value->getDate()?></span>'
+            <?= $value->getDesc()?>
+            <?php 
+            foreach ($value->getSubLine() as $k => $val) {
+                print $val ;
+            }
+            ?>
+            </div>
+<?php } ?>
 
-        // liste exaustives  des exigence affectées à ce context
-    }
-
-    ?>
+<?php } ?>
+   
+    
     </div>
 
     <div class="fichetwothirdright">

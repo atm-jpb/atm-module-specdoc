@@ -62,3 +62,9 @@ GoToHelpPage=Consulter l'aide
 
 projectsindex=<strong> Index des projets </strong>
 propalcard=Fiche porposition commerciale
+
+#
+# rights
+#
+readSpecs=Lire les spécifications des modules ATM dans les fichiers d'aides
+readDocs=Lire les documentations des modules ATM dans les fichiers d'aides

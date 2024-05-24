@@ -5,7 +5,8 @@
  * De les parser et de les injecter dans à la demande  au frontal 
  * 
  */
-require_once (__DIR__ . '/../lib/external/Parsedown.php');
+require_once DOL_DOCUMENT_ROOT .'/includes/parsedown/Parsedown.php';
+
 
 class DocSpecObject {
 
@@ -36,7 +37,9 @@ class DocSpecObject {
    }
    
 
-
+    /**
+     * @param LineDocSpec $line
+     */
    public function addTContextLine($line){
     $this->TContextLines[] = $line;
    }

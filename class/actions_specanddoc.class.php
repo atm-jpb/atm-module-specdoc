@@ -79,37 +79,54 @@ class ActionsSpecAndDoc extends CommonHookActions
 		global $conf, $user, $langs;
 		
 		$contexts = explode(':',$parameters['context']);
-		require_once (__DIR__ . '/docspecobjectmanager.class.php');
-		$dsm = new DocSpecObjectManager($this->db);
-		
-		var_dump($parameters['context']);
-		
-		if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0 ) {
-			$matched = implode(",", array_intersect($contexts, $dsm->TGlobalContextManaged));
-			$parameters['help_url'] = $dsm->getUrlToGenerator() . '?context='.$matched.'&originhelppage='. $parameters['help_url'];	
+		//var_dump($parameters['currentcontext']);
+		//var_dump($contexts);
+		if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'readSpec')){
+
+			require_once (__DIR__ . '/docspecobjectmanager.class.php');
+			$dsm = new DocSpecObjectManager($this->db);
+			
+			/** @todo pas necessaire d'avoir les contexts dans un array   mais jsute fetch les md si le context est declaré	*/
+			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0 ) {
+				$matched = implode(",", array_intersect($contexts, $dsm->TGlobalContextManaged));
+				// on intercepte la page d'aide wiki std pour la rediriger vers le générateur de page du module
+				$parameters['help_url'] = $dsm->getUrlToGenerator() . '?context='.$matched.'&originhelppage='. $parameters['help_url'];	
+			}
 		}
+		
 		return 0;
 	}
 	
-	
-
-	/* Add here any other hooked methods... */
 
 	public function printCommonFooter($parameters, $object, $action){
-		
+		global $user;
+			
+			
+		$contexts = explode(':',$parameters['context']);
+		//var_dump($parameters['currentcontext']);
+		//var_dump($contexts);
 		// changement dynamique de la popin d'aide pour les liens 
+		if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'readSpec')){		
+			require_once (__DIR__ . '/docspecobjectmanager.class.php');
+			$dsm = new DocSpecObjectManager($this->db);
+			$dsm->setCurrentContext($parameters['currentcontext']);	
+			$dsm->init();
+			
+			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0){
+				
+			 $names = $dsm->getModuleNameInteractingWithContext($parameters['currentcontext'], $dsm->TGlobalContextManaged);
+			 $msg = is_array($names)  && count($names) > 0   ? " <strong>Aide en ligne ATM</strong> :  Documentations et fichiers de spécifications disponibles<br>" . "Les modules suivants : ". implode(", ",$names) . " intéragissent avec le contexte en cours" : "";
+			} 
 
-		print '
-		<script>
-			$( document ).ready(function() {
-				console.log( "document loaded" );
-				$(".helppresent").parent().parent().prop("title", "Texte dynamique");
-			});
-		</script>
-		';
-		?>
-		
-		<?php
-
+			if (!empty($msg) )  {
+				?>
+			<script>
+				$( document ).ready(function() {
+					$(".helppresent").parent().parent().prop("title", '<?php echo $msg ?>')
+				});
+			</script>
+			<?php
+			}
+		}
 	}
 }

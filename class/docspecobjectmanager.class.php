@@ -108,6 +108,8 @@ class DocSpecObjectManager extends CommonObject
 		// PROPAL
 		$this->TGlobalContextManaged["propalcard"] = "propalcard";
 		
+		/** @todo fonction qui viendrait lire un fichier de context non std  qui serait alimenté par le hook llxheader  pour verifier s'il est déjà recensé */
+			
 	}
 
 	/**
@@ -138,13 +140,16 @@ class DocSpecObjectManager extends CommonObject
 		$this->loadClassFromActiveCustomModule();
 		$this->loadResourcesFromClass();
 	}
+	
 	/**
 	 * charge en memoire TConfig les .md depuis les modules actifs dans custom.  et crée les classes docspecobject
 	 */
 	private function  loadClassFromActiveCustomModule(){
-
+		global $dolibarr_main_document_root_alt;
+		
 		// Extracts files and directories that match a pattern
-		$items = glob( $this::UP_ONE_DIRECTORY . $this::ALL_ELEMENTS);
+		$items = glob(  $dolibarr_main_document_root_alt . $this::ALL_ELEMENTS);
+		
 		foreach ($items as $item) {	
 			if (is_dir($item) && $this->candidateToproceed($item) ) {
 				$this->TConfig[basename($item)] = array();
@@ -159,13 +164,14 @@ class DocSpecObjectManager extends CommonObject
 				}	
 			}
 		}
+		
 	}
 
 
 	/**
-	 * 
+	 * @param string $item
 	 */
-	private function candidateToproceed($item){
+	private function candidateToproceed($item): bool{
 		global $conf;
 
 		return !empty($conf->{basename($item)}->enabled) && ($this->FileExistsWithSuffix($item, $this::HELPER_SPECS_FILE_NAME ) || $this->FileExistsWithSuffix($item, $this::HELPER_DOCS_FILE_NAME)) ;
@@ -173,7 +179,7 @@ class DocSpecObjectManager extends CommonObject
 	/**
 	 * Charge les fichiers .md  pour chaque object enfant dans Tconfig si ils existent
 	 */
-	private function loadResourcesFromClass(){
+	private function loadResourcesFromClass(): DocSpecObjectManager{
 		if (is_array($this->TConfig)){
 			foreach ($this->TConfig as $key => $wrappers) {		
 				foreach($wrappers as $keywrapper => $wrapper){
@@ -192,16 +198,18 @@ class DocSpecObjectManager extends CommonObject
 	/**
 	 * getter
 	 */
-	public function getUrlToGenerator(){
+	public function getUrlToGenerator() : string {
 		global $conf;
 
 		return  DOL_MAIN_URL_ROOT . $conf->file->dol_url_root['alt0']  . "/" . "specanddoc" . '/core_gen_web.php';
 	}
 
 	/**
-	 * 
+	 * @todo à renommer suffixe doit disparaître au profit du nom du fichier
+	 * @param string $folder
+	 * @param string $suffixe
 	 */
-	public function FileExistsWithSuffix($folder, $suffixe) {
+	public function FileExistsWithSuffix($folder, $suffixe) : string|bool {
 
 		$files ="";
 
@@ -225,5 +233,33 @@ class DocSpecObjectManager extends CommonObject
 		}
 		// Le fichier avec le suffixe n'existe pas
 		return false;
+	}
+
+	/**
+	 * @param string $currentcontext
+	 */
+	public function getModuleNameInteractingWithContext($currentContext) : array  {
+
+		$Tname = [];
+
+		foreach ($this->TConfig as $key => $wrappers) {		
+			foreach($wrappers as $keywrapper => $wrapper){
+				/** @todo voir pour ne pas avoir à mettre $object */
+				if ($keywrapper == 'object'){
+					$Tname[] = $key;
+				}
+			}
+		}
+		
+			return $this->formatNames($Tname);
+	}
+	/**
+	 * @param array $Tname
+	 */
+	public function  formatNames($Tnames) : array{
+			foreach ($Tnames as $key => $value) {
+				$Tnames[$key] = '<strong>'.$value.'</strong>';
+			}
+			return $Tnames;
 	}
 }

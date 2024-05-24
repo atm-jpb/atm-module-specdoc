@@ -280,24 +280,19 @@ class modSpecAndDoc extends DolibarrModules
 		$r = 0;
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
-		/*
+		
 		$o = 1;
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read objects of SpecAndDoc'; // Permission label
+		$this->rights[$r][1] =$langs->trans('readSpecs'); // Permission label
 		$this->rights[$r][4] = 'docspecobjectmanager';
-		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'read'))
+		$this->rights[$r][5] = 'readSpec'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'read'))
 		$r++;
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 2); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update objects of SpecAndDoc'; // Permission label
+		$this->rights[$r][1] = $langs->trans('readDocs'); // Permission label
 		$this->rights[$r][4] = 'docspecobjectmanager';
-		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'write'))
+		$this->rights[$r][5] = 'readDocs'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'write'))
 		$r++;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 3); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete objects of SpecAndDoc'; // Permission label
-		$this->rights[$r][4] = 'docspecobjectmanager';
-		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'delete'))
-		$r++;
-		*/
+		
 		/* END MODULEBUILDER PERMISSIONS */
 
 		// Main menu entries to add

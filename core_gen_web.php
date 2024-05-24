@@ -58,7 +58,7 @@ if (!$res) {
 
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once (__DIR__ . '/class/docspecobjectmanager.class.php');
-
+require_once (__DIR__ . '/lib/specanddoc.lib.php');
 $hookmanager->initHooks('specdocgenerator');
 $langs->loadLangs(array("specanddoc@specanddoc"));
 
@@ -87,6 +87,13 @@ $conf->dol_hide_leftmenu = 1;
 
 llxHeader("", $langs->trans("SpecAndDocArea") , $originHelpPage, '', 0, 0, '', '', '', 'mod-specanddoc page-index');
 
+
+//$head = specanddocWebPagePrepareHead();
+//print dol_get_fiche_head($head, 'admin', $langs->trans("admin"));
+
+
+
+
 print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'specanddoc.png@specanddoc');
 
 ?>
@@ -105,7 +112,7 @@ print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'sp
                 <span class="fa fa-info-circle" title="Exigence"></span>
                 <span><h3 style="display:inline;">Exigence-<?=$value->getNeed()?></h3></span>
            
-            <span style="float:right;"><?=$value->getDate()?></span>'
+            <span style="float:right;"><?=$value->getDate()?></span>
             <?= $value->getDesc()?>
             <?php 
             foreach ($value->getSubLine() as $k => $val) {

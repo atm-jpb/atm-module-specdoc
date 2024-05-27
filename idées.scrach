@@ -1,0 +1,35 @@
+docs
+------
+-   Creer un fichier de context qui est alimenté par le hook llxheader du module docs  pour recenser les contexts 0.5
+@ voir @todo dans la class manager 
+
+- Ajouter un crud dans la page de generation web  pour ajouter une entrée dans un fichier spec.md / doc.md
+liste des context 
+liste des modules enable sur l'instance 
+textarea (voir  code reminder pour le visuel ) pas d'utilisation de (ckeditor)
+
+- Ajouter un crud  create/edit pour un module donné () 
+- Lire le .md present dans le module concerné ou le créer si inexstant.
+- Visuel idem  ( code reminder  Outils perso ) 
+- Si le md existe on le précharge  
+---------------------------------------------------------------------------------------------------------------------------------------  3 j 
+
+www-data n'a pas les droits dans custom 
+Si le fichier md est modifier  on fait quoi du diff ? 
+------------------------------------------------------  flo  ? j'en sais rien  (2 j min) 
+
+spec .
+----------
+
+ce fichier spec.md a pour vocation de refleter le fonctionnement ,règles,  workflows ...  traduits   soit d'un chiffrage ou d'une analyse à postériorie
+d'un module. 
+
+mettre en place un process d'alimentation du fichier de spec.md
+
+-1) lors du dev des  les tâches insérées dans le todo sont transferées dans ce fichier par un dev. qui devra remplir les entêtes  necessaires.
+en premier lieu , 
+la version du module doit être connue 
+pas d'insertion d'image dans ce fichier.
+puis la description de la tâche (il faudra synthétiser la demande pour qu'elle soit localisable dans un context particulier voir exemple))
+
+

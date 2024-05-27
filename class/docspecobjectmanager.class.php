@@ -155,11 +155,11 @@ class DocSpecObjectManager extends CommonObject
 				$this->TConfig[basename($item)] = array();
 				$this->TConfig[basename($item)]['object'] = new DocSpecObject( basename($item));
 
-				if ($this->FileExistsWithSuffix($item, $this::HELPER_SPECS_FILE_NAME )){
+				if ($this->FileExistsWithName($item, $this::HELPER_SPECS_FILE_NAME )){
 					$this->TConfig[basename($item)]['specsFile']  =  $this::HELPER_SPECS_FILE_NAME;
 
 				}   
-				if ($this->FileExistsWithSuffix($item, $this::HELPER_DOCS_FILE_NAME )){
+				if ($this->FileExistsWithName($item, $this::HELPER_DOCS_FILE_NAME )){
 					$this->TConfig[basename($item)]['docsFile'] =  $this::HELPER_DOCS_FILE_NAME;
 				}	
 			}
@@ -174,7 +174,7 @@ class DocSpecObjectManager extends CommonObject
 	private function candidateToproceed($item): bool{
 		global $conf;
 
-		return !empty($conf->{basename($item)}->enabled) && ($this->FileExistsWithSuffix($item, $this::HELPER_SPECS_FILE_NAME ) || $this->FileExistsWithSuffix($item, $this::HELPER_DOCS_FILE_NAME)) ;
+		return !empty($conf->{basename($item)}->enabled) && ($this->FileExistsWithName($item, $this::HELPER_SPECS_FILE_NAME ) || $this->FileExistsWithName($item, $this::HELPER_DOCS_FILE_NAME)) ;
 	}
 	/**
 	 * Charge les fichiers .md  pour chaque object enfant dans Tconfig si ils existent
@@ -205,11 +205,11 @@ class DocSpecObjectManager extends CommonObject
 	}
 
 	/**
-	 * @todo à renommer suffixe doit disparaître au profit du nom du fichier
+	 * @todo à modifier ...  si on cherche le fichier sans une partie suffixe  un is_file suffit
 	 * @param string $folder
-	 * @param string $suffixe
+	 * @param string $$fileName
 	 */
-	public function FileExistsWithSuffix($folder, $suffixe) : string|bool {
+	public function FileExistsWithName($folder, $fileName) : string|bool {
 
 		$files ="";
 
@@ -219,15 +219,15 @@ class DocSpecObjectManager extends CommonObject
 		}
 		
 		
-		// Expression régulière pour vérifier le suffixe
-		$regex = "/{$suffixe}$/";
+		// Expression régulière pour vérifier le nomdufichier
+		$regex = "/{$fileName}$/";
 		
 		if (is_array($files)){
-			// Parcours des fichiers pour vérifier le suffixe
+			// Parcours des fichiers pour vérifier 
 			foreach ($files as $file) {
 				// Vérifie si le fichier correspond à l'expression régulière
 				if (preg_match($regex, $file)) {
-					return $file; // Le fichier avec le suffixe existe
+					return $file; // Le fichier existe
 				}
 			}
 		}
@@ -237,6 +237,7 @@ class DocSpecObjectManager extends CommonObject
 
 	/**
 	 * @param string $currentcontext
+	 * @return array
 	 */
 	public function getModuleNameInteractingWithContext($currentContext) : array  {
 

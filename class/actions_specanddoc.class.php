@@ -86,7 +86,9 @@ class ActionsSpecAndDoc extends CommonHookActions
 			require_once (__DIR__ . '/docspecobjectmanager.class.php');
 			$dsm = new DocSpecObjectManager($this->db);
 			var_dump($contexts);
-			/** @todo pas necessaire d'avoir les contexts dans un array   mais jsute fetch les md si le context est declaré	*/
+
+			/** @todo non !!!  on passe par $_SERVER['PHP_SELF']  et on doir valorisé un tableau dans dsm  avec le chemin appelant et le context attentu !!! */
+			// c'est le seul moyen pour garantir le context unique o fait ça demain  !!! ;)
 			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0 ) {
 				//var_dump('ici');
 				$matched = implode(",", array_intersect($contexts, $dsm->TGlobalContextManaged));

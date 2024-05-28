@@ -35,8 +35,8 @@ require_once (__DIR__ . '/docspecobject.class.php');
  */
 class DocSpecObjectManager extends CommonObject
 {
-	
-	
+
+
 	/**
 	 * @var string ID of module.
 	 */
@@ -67,7 +67,7 @@ class DocSpecObjectManager extends CommonObject
 	 * @var string String with name of icon for docspecobjectmanager. Must be a 'fa-xxx' fontawesome code (or 'fa-xxx_fa_color_size') or 'docspecobjectmanager@specanddoc' if picto is file 'img/object_docspecobjectmanager.png'.
 	 */
 	public $picto = 'fa-file';
-	public $urlToGeneratorPage; 
+	public $urlToGeneratorPage;
 	public $TConfig = [];
 	public $TGlobalContextManaged = [];
 	public $currentContext;
@@ -98,7 +98,7 @@ class DocSpecObjectManager extends CommonObject
 
 	/**
 	 * @todo implementer la liste exaustive des contexts
-	 * Utilisé dans le fichier d'action 
+	 * Utilisé dans le fichier d'action
 	 */
 	private function setGlobalContext(){
 		global $conf, $hookmanager;
@@ -110,14 +110,14 @@ class DocSpecObjectManager extends CommonObject
 		$this->TGlobalContextManaged["propallist"] = "propallist";
 		$this->TGlobalContextManaged["proposalindex"] = "proposalindex";
 		$this->TGlobalContextManaged["commercialindex"] = "commercialindex";
-		
+
 		/** @todo fonction qui viendrait lire un fichier de context non std  qui serait alimenté par le hook llxheader  pour verifier s'il est déjà recensé */
-			
+
 	}
 
 	/**
 	 * SETTER currentContext
-	 * $context string 
+	 * $context string
 	 */
 	public function  setCurrentContext(string $context) : DocSpecObjectManager {
 		$this->currentContext = $context;
@@ -126,34 +126,34 @@ class DocSpecObjectManager extends CommonObject
 	}
 
 	public function  getCurrentContext() : string {
-		
+
 		return $this->currentContext;
 	}
 
 
 	public function getLangsTransContext() : string {
-		global $langs;	
+		global $langs;
 		return   $langs->trans($this->getCurrentContext());
 	}
 	/**
-	 * 
+	 *
 	 */
 	public function init(){
 
 		$this->loadClassFromActiveCustomModule();
 		$this->loadResourcesFromClass();
 	}
-	
+
 	/**
 	 * charge en memoire TConfig les .md depuis les modules actifs dans custom.  et crée les classes docspecobject
 	 */
 	private function  loadClassFromActiveCustomModule(){
 		global $dolibarr_main_document_root_alt;
-		
+
 		// Extracts files and directories that match a pattern
 		$items = glob(  $dolibarr_main_document_root_alt . $this::ALL_ELEMENTS);
-		
-		foreach ($items as $item) {	
+
+		foreach ($items as $item) {
 			if (is_dir($item) && $this->candidateToproceed($item) ) {
 				$this->TConfig[basename($item)] = array();
 				$this->TConfig[basename($item)]['object'] = new DocSpecObject( basename($item));
@@ -161,13 +161,13 @@ class DocSpecObjectManager extends CommonObject
 				if ($this->FileExistsWithName($item, $this::HELPER_SPECS_FILE_NAME )){
 					$this->TConfig[basename($item)]['specsFile']  =  $this::HELPER_SPECS_FILE_NAME;
 
-				}   
+				}
 				if ($this->FileExistsWithName($item, $this::HELPER_DOCS_FILE_NAME )){
 					$this->TConfig[basename($item)]['docsFile'] =  $this::HELPER_DOCS_FILE_NAME;
-				}	
+				}
 			}
 		}
-		
+
 	}
 
 
@@ -184,20 +184,20 @@ class DocSpecObjectManager extends CommonObject
 	 */
 	private function loadResourcesFromClass(): DocSpecObjectManager{
 		if (is_array($this->TConfig)){
-			foreach ($this->TConfig as $key => $wrappers) {		
+			foreach ($this->TConfig as $key => $wrappers) {
 				foreach($wrappers as $keywrapper => $wrapper){
 					/** @todo voir pour ne pas avoir à mettre $object */
 					if ($keywrapper == 'object'){
-						$this->TConfig[$key]['specs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_SPECS, $this->currentContext);	
+						$this->TConfig[$key]['specs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_SPECS, $this->currentContext);
 						/** @todo  on peut faire la même avec une doc */
-						//$this->TConfig[$key]['docs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_DOCS, $this->currentContext);	
-					}		
+						//$this->TConfig[$key]['docs']=  $wrapper->loadResourcesFile($wrapper::RESOURCE_TYPE_DOCS, $this->currentContext);
+					}
 				}
 			}
 		}
 		return $this;
 	}
-	
+
 	/**
 	 * getter
 	 */
@@ -212,7 +212,7 @@ class DocSpecObjectManager extends CommonObject
 	 * @param string $folder
 	 * @param string $$fileName
 	 */
-	public function FileExistsWithName($folder, $fileName) : string|bool {
+	public function FileExistsWithName($folder, $fileName)  {
 
 		$files ="";
 
@@ -220,13 +220,13 @@ class DocSpecObjectManager extends CommonObject
 			// Obtient la liste des fichiers dans le répertoire
 			$files = scandir($folder);
 		}
-		
-		
+
+
 		// Expression régulière pour vérifier le nomdufichier
 		$regex = "/{$fileName}$/";
-		
+
 		if (is_array($files)){
-			// Parcours des fichiers pour vérifier 
+			// Parcours des fichiers pour vérifier
 			foreach ($files as $file) {
 				// Vérifie si le fichier correspond à l'expression régulière
 				if (preg_match($regex, $file)) {
@@ -239,23 +239,33 @@ class DocSpecObjectManager extends CommonObject
 	}
 
 	/**
-	 * @param string $currentcontext
+	 * @param array $currentcontext
 	 * @return array
 	 */
-	public function getModuleNameInteractingWithContext($currentContext) : array  {
+	public function getModuleNameInteractingWithContext(array $Contexts) : array  {
 
 		$Tname = [];
-
-		foreach ($this->TConfig as $key => $wrappers) {		
+		$TcontextDeclared = [];
+		foreach ($this->TConfig as $key => $wrappers) {
 			foreach($wrappers as $keywrapper => $wrapper){
 				/** @todo voir pour ne pas avoir à mettre $object */
 				if ($keywrapper == 'object'){
-					$Tname[] = $key;
+
+					foreach ($wrapper->getContextLines() as  $line){
+						// on stock les context déclarés dans un array
+						$TcontextDeclared[] = $line->getContext();
+
+					}
+					if (count(array_intersect($Contexts, $TcontextDeclared)) > 0){
+						$Tname[] = $key;
+					}
 				}
 			}
 		}
-		
-			return $this->formatNames($Tname);
+
+
+
+		return $this->formatNames($Tname);
 	}
 	/**
 	 * @param array $Tname

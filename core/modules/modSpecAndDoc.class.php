@@ -121,6 +121,7 @@ class modSpecAndDoc extends DolibarrModules
 					   'projectsindex',
 					   'proposalindex',
 					   'proposalcard',
+					   'propalcard',
 					   'projectscard',
 					   'commercialindex',
 
@@ -180,8 +181,8 @@ class modSpecAndDoc extends DolibarrModules
 			$conf->specanddoc = new stdClass();
 			$conf->specanddoc->enabled = 0;
 		}
-		
-		
+
+
 
 
 		// Array to add new pages in new tabs
@@ -285,7 +286,7 @@ class modSpecAndDoc extends DolibarrModules
 		$r = 0;
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
-		
+
 		$o = 1;
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
 		$this->rights[$r][1] =$langs->trans('readSpecs'); // Permission label
@@ -297,7 +298,7 @@ class modSpecAndDoc extends DolibarrModules
 		$this->rights[$r][4] = 'docspecobjectmanager';
 		$this->rights[$r][5] = 'readDocs'; // In php code, permission will be checked by test if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'write'))
 		$r++;
-		
+
 		/* END MODULEBUILDER PERMISSIONS */
 
 		// Main menu entries to add

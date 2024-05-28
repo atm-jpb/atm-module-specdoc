@@ -77,7 +77,7 @@ class ActionsSpecAndDoc extends CommonHookActions
 	public function llxheader(&$parameters, $object, $action){
 
 		global $conf, $user, $langs;
-		
+
 		$contexts = explode(':',$parameters['context']);
 		var_dump($parameters['currentcontext']);
 		var_dump($contexts);
@@ -92,34 +92,41 @@ class ActionsSpecAndDoc extends CommonHookActions
 				$matched = implode(",", array_intersect($contexts, $dsm->TGlobalContextManaged));
 				var_dump($matched);
 				// on intercepte la page d'aide wiki std pour la rediriger vers le générateur de page du module
-				$parameters['help_url'] = $dsm->getUrlToGenerator() . '?context='.$matched.'&originhelppage='. $parameters['help_url'];	
+				$parameters['help_url'] = $dsm->getUrlToGenerator() . '?context='.$matched.'&originhelppage='. $parameters['help_url'];
 			}
 		}
-		
+
 		return 0;
 	}
-	
 
+	public function restrictedArea($parameters, $object, $action){
+		return 0;
+	}
+
+	public function llxFooter($parameters, $object, $action){
+		$contexts = explode(':',$parameters['context']);
+	}
 	public function printCommonFooter($parameters, $object, $action){
 		global $user;
-			
-			
+
+
 		$contexts = explode(':',$parameters['context']);
 		//var_dump($parameters['currentcontext']);
 		//var_dump($contexts);
-		// changement dynamique de la popin d'aide pour les liens 
-		if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'readSpec')){		
+		// changement dynamique de la popin d'aide pour les liens
+		if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'readSpec')){
 			require_once (__DIR__ . '/docspecobjectmanager.class.php');
 			$dsm = new DocSpecObjectManager($this->db);
-			$dsm->setCurrentContext($parameters['currentcontext']);	
+			// utiliser currentContext n'est pas bon ici
+			$dsm->setCurrentContext($parameters['currentcontext']);
 			$dsm->init();
 			// ici on doit voir pour intercepter les context des fichier spec.md et confronter avec le currentcontext
-			
+			// ici cela intersect avec les docspecObject plutot !!! pas avec ce que le module gère comme  context déclarés
 			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0){
-				
-			 $names = $dsm->getModuleNameInteractingWithContext($parameters['currentcontext'], $dsm->TGlobalContextManaged);
+
+			 $names = $dsm->getModuleNameInteractingWithContext($contexts);
 			 $msg = is_array($names)  && count($names) > 0   ? " <strong>Aide en ligne ATM</strong> :  Documentations et fichiers de spécifications disponibles<br>" . "Les modules suivants : ". implode(", ",$names) . " intéragissent avec le contexte en cours" : "";
-			} 
+			}
 
 			if (!empty($msg) )  {
 				?>

@@ -107,6 +107,9 @@ class DocSpecObjectManager extends CommonObject
 		$this->TGlobalContextManaged["projectlist"] = "projectlist";
 		// PROPAL
 		$this->TGlobalContextManaged["propalcard"] = "propalcard";
+		$this->TGlobalContextManaged["propallist"] = "propallist";
+		$this->TGlobalContextManaged["proposalindex"] = "proposalindex";
+		$this->TGlobalContextManaged["commercialindex"] = "commercialindex";
 		
 		/** @todo fonction qui viendrait lire un fichier de context non std  qui serait alimenté par le hook llxheader  pour verifier s'il est déjà recensé */
 			

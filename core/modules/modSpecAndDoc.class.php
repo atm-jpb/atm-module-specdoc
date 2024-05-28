@@ -118,7 +118,12 @@ class modSpecAndDoc extends DolibarrModules
 				   'data' => array(
 				       'llxHeader',
 					   'main',
-					   'projectsindex'
+					   'projectsindex',
+					   'proposalindex',
+					   'proposalcard',
+					   'projectscard',
+					   'commercialindex',
+
 				//       'hookcontext2',
 				   ),
 				//   'entity' => '0',

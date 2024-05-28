@@ -79,16 +79,18 @@ class ActionsSpecAndDoc extends CommonHookActions
 		global $conf, $user, $langs;
 		
 		$contexts = explode(':',$parameters['context']);
-		//var_dump($parameters['currentcontext']);
-		//var_dump($contexts);
+		var_dump($parameters['currentcontext']);
+		var_dump($contexts);
 		if ($user->hasRight('specanddoc', 'docspecobjectmanager', 'readSpec')){
 
 			require_once (__DIR__ . '/docspecobjectmanager.class.php');
 			$dsm = new DocSpecObjectManager($this->db);
-			
+			var_dump($contexts);
 			/** @todo pas necessaire d'avoir les contexts dans un array   mais jsute fetch les md si le context est declaré	*/
 			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0 ) {
+				//var_dump('ici');
 				$matched = implode(",", array_intersect($contexts, $dsm->TGlobalContextManaged));
+				var_dump($matched);
 				// on intercepte la page d'aide wiki std pour la rediriger vers le générateur de page du module
 				$parameters['help_url'] = $dsm->getUrlToGenerator() . '?context='.$matched.'&originhelppage='. $parameters['help_url'];	
 			}
@@ -111,6 +113,7 @@ class ActionsSpecAndDoc extends CommonHookActions
 			$dsm = new DocSpecObjectManager($this->db);
 			$dsm->setCurrentContext($parameters['currentcontext']);	
 			$dsm->init();
+			// ici on doit voir pour intercepter les context des fichier spec.md et confronter avec le currentcontext
 			
 			if (count(array_intersect($contexts, $dsm->TGlobalContextManaged)) > 0){
 				

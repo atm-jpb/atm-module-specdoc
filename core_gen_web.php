@@ -97,7 +97,7 @@ llxHeader("", $langs->trans("SpecAndDocArea") , $originHelpPage, '', 0, 0, '', '
 print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'specanddoc.png@specanddoc');
 
 ?>
-<div class="fichecenter"><div class="fichethirdleft">
+<div class=""><div class="">
     <?php
 
 
@@ -107,7 +107,7 @@ print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'sp
         print '<hr>';
         foreach ($configs['specs'] as $keyConf => $value) {
             ?>
-            <div class="info clearboth">
+            <div class="info clearboth minwidth100">
 
                 <span class="fa fa-info-circle" title="Exigence"></span>
                 <span><h3 style="display:inline;">Exigence-<?=$value->getNeed()?></h3></span>

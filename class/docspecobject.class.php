@@ -105,8 +105,6 @@ class DocSpecObject {
     private function addLinesSpec($file_handle, $globalContext){
 
         $lineSpec = new LineDocSpec();
-        $currentContext = "";
-        $description_buffer = "";
         $in_description = false;
 		// ligne à ligne
         foreach ($this->get_all_lines($file_handle) as $TextLine) {
@@ -121,7 +119,7 @@ class DocSpecObject {
 
 					//si je suis sur la declaration des tags de context de la ligne courante (multicontext possible) et que ce context est utilisé dans le fichier de specs
                     if ( !empty($contextsLine) && in_array($globalContext, $contextsLine )) {
-						//echo var_export($contexts, true);
+
 						preg_match(self::NEED_REGEX, $matches[0], $needMatch);
 						$need = $needMatch[1];
 
@@ -146,33 +144,18 @@ class DocSpecObject {
 							$this->addTContextLine($lineSpec);
 							$lineSpec = new LineDocSpec();
 						}
-						//je dois clôture l'obect etle stoquer'
-						// je gère la description ici
-						//$in_description = true;
 					}
 
 				// je ne suis pas sur une ligne de tags déclaratif et que la description est dans le context
                 }elseif ($lineSpec->getContext() == $globalContext){
-
 					$lineSpec->setSubLine($this->parser->text($TextLine));
 				}
-
             }
         }
         // last insertion
         return $lineSpec;
 
     }
-    // Fonction pour extraire la partie droite du tag context
-    public function extractContextPart($tag, $prefix = "") {
-    $regex = $prefix;
-    $extractedPart = '';
-    if (preg_match($regex, $tag, $matches)) {
-        $extractedPart = $matches[1];
-    }
-    return $extractedPart;
-    }
-
 
     /**
      *

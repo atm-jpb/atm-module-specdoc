@@ -64,8 +64,7 @@ class DocSpecObject {
      * @param LineDocSpec $line
      */
    public function addTContextLine($line){
-	   if ($line->getContext() != null)
-    $this->TContextLines[] = $line;
+	   if ($line->getContext() != null) $this->TContextLines[] = $line;
    }
 
     /**

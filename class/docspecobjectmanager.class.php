@@ -70,6 +70,7 @@ class DocSpecObjectManager extends CommonObject
 	public $urlToGeneratorPage;
 	public $TConfig = [];
 	public $TGlobalContextManaged = [];
+	public $TUriToContext = [];
 	public $currentContext;
 
 	const CLASS_PATH_FOLDER = '/class/';
@@ -92,10 +93,26 @@ class DocSpecObjectManager extends CommonObject
 		$this->db = $db;
 		$this->urlToGeneratorPage = DOL_MAIN_URL_ROOT . $conf->file->dol_url_root['alt0']  . "/" . "specanddoc" . '/core_gen_web.php';
 		$this->setGlobalContext();
+		$this->setTUriToContext();
 
 
 	}
 
+	public function setTUriToContext(){
+
+		$this->TUriToContext['noContext'] = 'noContext';
+		//main menu
+		$this->TUriToContext['.index.php'] = 'mainmenu';
+		// propal
+		$this->TUriToContext['/comm/propal/index.php'] = 'propalindex';
+		$this->TUriToContext['/comm/propal/list.php'] = 'propallist';
+		$this->TUriToContext['/comm/propal/card.php'] = 'propalcard';
+
+		// project
+
+		//tiers
+
+	}
 	/**
 	 * @todo implementer la liste exaustive des contexts
 	 * Utilisé dans le fichier d'action
@@ -119,12 +136,38 @@ class DocSpecObjectManager extends CommonObject
 	 * SETTER currentContext
 	 * $context string
 	 */
-	public function  setCurrentContext(string $context) : DocSpecObjectManager {
+	public function  setCurrentContext($context) : DocSpecObjectManager {
 		$this->currentContext = $context;
 
 		return $this;
 	}
 
+	public function setCurrentontextFromUri(){
+
+		$patternhtdocs = '/htdocs(.*)/';
+		$patternCustom = '/custom(.*)/';
+		$patternHost = '/' . $_SERVER['HTTP_HOST'] . '(.*)/';
+
+		if (isset($_SERVER['PHP_SELF'])){
+			$uri = $_SERVER['PHP_SELF'];
+		}
+
+		// la page vient d'un module dans custom
+		if (preg_match($patternCustom, $uri, $matches)) {
+			$this->setCurrentContext($this->TUriToContext[$matches[1]]);
+		}elseif (preg_match($patternhtdocs, $uri, $matches)){
+		// la page vient d'htdocs
+			$this->setCurrentContext($this->TUriToContext[$matches[1]]);
+		}elseif (preg_match($patternHost, $uri, $matches)){
+			$this->setCurrentContext('noContext');
+		}else{
+			$this->setCurrentContext('noContext');
+		}
+
+
+
+
+	}
 	public function  getCurrentContext() : string {
 
 		return $this->currentContext;
@@ -142,8 +185,24 @@ class DocSpecObjectManager extends CommonObject
 
 		$this->loadClassFromActiveCustomModule();
 		$this->loadResourcesFromClass();
+
+		return $this->isUrlEditable();
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function isUrlEditable() : bool {
+
+
+		// si au moins une spec correspond on réécrit l'uri
+		foreach ($this->TConfig as $value){
+			if (is_array($value['specs']) && count($value['specs']) > 0 ){
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * charge en memoire TConfig les .md depuis les modules actifs dans custom.  et crée les classes docspecobject
 	 */
@@ -242,25 +301,12 @@ class DocSpecObjectManager extends CommonObject
 	 * @param array $currentcontext
 	 * @return array
 	 */
-	public function getModuleNameInteractingWithContext(array $Contexts) : array  {
+	public function getModuleNameInteractingWithContext() : array  {
 
 		$Tname = [];
-		$TcontextDeclared = [];
 		foreach ($this->TConfig as $key => $wrappers) {
-			foreach($wrappers as $keywrapper => $wrapper){
-				/** @todo voir pour ne pas avoir à mettre $object */
-				if ($keywrapper == 'object'){
-
-					foreach ($wrapper->getContextLines() as  $line){
-						// on stock les context déclarés dans un array
-						$TcontextDeclared[] = $line->getContext();
-
-					}
-					if (count(array_intersect($Contexts, $TcontextDeclared)) > 0){
-						$Tname[] = $key;
-					}
-				}
-			}
+			if (is_array($wrappers['specs']) && count($wrappers['specs']) > 0 )
+				$Tname[] = $key;
 		}
 
 

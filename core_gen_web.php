@@ -99,36 +99,36 @@ print load_fiche_titre($langs->trans("SpecAndDocArea"  ) . $langContext, '', 'sp
 ?>
 <div class="fichecenter"><div class="fichethirdleft">
     <?php
-    
-   
-     //@todo deplacer dans la classe DocSpecObjectGenerator   
+
+
+     //@todo deplacer dans la classe DocSpecObjectGenerator
     foreach ($docSpecGenerator->TConfig as $key => $configs) {
         print load_fiche_titre($langs->trans('Module') .' '.  '<strong>' . $key .  '</strong>','','switch_on');
         print '<hr>';
-        foreach ($configs['specs'] as $keyConf => $value) {  
+        foreach ($configs['specs'] as $keyConf => $value) {
             ?>
             <div class="info clearboth">
-           
+
                 <span class="fa fa-info-circle" title="Exigence"></span>
                 <span><h3 style="display:inline;">Exigence-<?=$value->getNeed()?></h3></span>
-           
+
             <span style="float:right;"><?=$value->getDate()?></span>
-            <?= $value->getDesc()?>
-            <?php 
+
+            <?php
             foreach ($value->getSubLine() as $k => $val) {
-                print $val ;
+               if (!empty($val)) print $val ;
             }
             ?>
             </div>
 <?php } ?>
 
 <?php } ?>
-   
-    
+
+
     </div>
 
     <div class="fichetwothirdright">
-        
+
     </div>
 </div>
 

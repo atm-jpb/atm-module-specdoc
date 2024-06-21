@@ -7,8 +7,9 @@ affichage d'une page de documentation et/ou de spécification  pour une page vis
 ### déclaration des fichiers spécs.md et docs.md
 
 #### Entête de tags (en cours )
-définition formèlle d'une spéc
+définition formelle d'une spéc
 les tags sont placés dans l'ordre suivant les tags de contexts [[context]][[context]]
+à terme les contexts seront des uris vers les pages désirées. Plus simple à gérer
 suivie du tag need [[need-num]] (exigence)
 suivie du tag date [[date-yyyy/05/01]] (date d'insertion)
 

@@ -154,10 +154,10 @@ class DocSpecObjectManager extends CommonObject
 
 		// la page vient d'un module dans custom
 		if (preg_match($patternCustom, $uri, $matches)) {
-			$this->setCurrentContext($this->TUriToContext[$matches[1]]);
+			if (key_exists($matches[1],$this->TUriToContext )) $this->setCurrentContext($this->TUriToContext[$matches[1]]);
 		}elseif (preg_match($patternhtdocs, $uri, $matches)){
 		// la page vient d'htdocs
-			$this->setCurrentContext($this->TUriToContext[$matches[1]]);
+			if (key_exists($matches[1],$this->TUriToContext )) $this->setCurrentContext($this->TUriToContext[$matches[1]]);
 		}elseif (preg_match($patternHost, $uri, $matches)){
 			$this->setCurrentContext('noContext');
 		}else{
